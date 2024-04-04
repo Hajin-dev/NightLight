@@ -60,7 +60,6 @@ namespace NightLight
 
                 // Outdoors only 
                 if (this.Config.NightLightToggleOutdoorsKey.JustPressed()) {
-                    // Outdoors
                     if (this.Config.NightLightOutdoors == true) {
                         this.Config.NightLightOutdoors = false;
                     } else {
@@ -70,19 +69,18 @@ namespace NightLight
                     this.Helper.WriteConfig(this.Config);
                 }
 
-                // Mines only
-                if (this.Config.NightLightToggleMinesKey.JustPressed()) {
-                    // Mines
-                    if (this.Config.NightLightMines == true) {
-                        this.Config.NightLightMines = false;
+                // Underground only
+                if (this.Config.NightLightToggleUndergroundKey.JustPressed()) {
+                    if (this.Config.NightLightUnderground == true) {
+                        this.Config.NightLightUnderground = false;
                     } else {
-                        this.Config.NightLightMines = true;
+                        this.Config.NightLightUnderground = true;
                     }
 
                     this.Helper.WriteConfig(this.Config);
                 }
 
-                // Outdoors & Mines
+                // Outdoors & Underground
                 if (this.Config.NightLightToggleAllKey.JustPressed()) {
                     // Outdoors
                     if (this.Config.NightLightOutdoors == true) {
@@ -91,11 +89,11 @@ namespace NightLight
                         this.Config.NightLightOutdoors = true;
                     }
 
-                    // Mines
-                    if (this.Config.NightLightMines == true) {
-                        this.Config.NightLightMines = false;
+                    // Underground
+                    if (this.Config.NightLightUnderground == true) {
+                        this.Config.NightLightUnderground = false;
                     } else {
-                        this.Config.NightLightMines = true;
+                        this.Config.NightLightUnderground = true;
                     }
 
                     this.Helper.WriteConfig(this.Config);
@@ -116,9 +114,9 @@ namespace NightLight
 
             }
 
-            // Toggle lighting within the mines
-            if (Config.NightLightMines) {
-                if (Game1.currentLocation.Name.StartsWith("UndergroundMine")) {
+            // Toggle lighting within the mines and farm cave
+            if (Config.NightLightUnderground) {
+                if (Game1.currentLocation.Name.StartsWith("UndergroundMine") || Game1.currentLocation.Name == "FarmCave") {
                     Game1.drawLighting = false;
                 }
             }
@@ -165,13 +163,13 @@ namespace NightLight
                 setValue: value => this.Config.NightLightOutdoors = value
             );
 
-            // Mines NightLight
+            // Underground NightLight
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "Mines",
-                tooltip: () => "Enables light on all floors of the mines (most notable on floors 30-39 of the regular mines).",
-                getValue: () => this.Config.NightLightMines,
-                setValue: value => this.Config.NightLightMines = value
+                name: () => "Underground",
+                tooltip: () => "Enables light on all floors of the mines (most notable on floors 30-39 of the regular mines) and inside the farm cave.",
+                getValue: () => this.Config.NightLightUnderground,
+                setValue: value => this.Config.NightLightUnderground = value
             );
 
             // Section Title For Hotkeys
@@ -185,7 +183,7 @@ namespace NightLight
             configMenu.AddKeybindList(
                 mod: this.ModManifest,
                 name: () => "Toggle All",
-                tooltip: () => "Set the keybind to toggle NightLight on/off for both outdoors and the mines.",
+                tooltip: () => "Set the keybind to toggle NightLight on/off for both outdoors and underground areas.",
                 getValue: () => this.Config.NightLightToggleAllKey,
                 setValue: value => this.Config.NightLightToggleAllKey = value
             );
@@ -199,13 +197,13 @@ namespace NightLight
                 setValue: value => this.Config.NightLightToggleOutdoorsKey = value
             );
 
-            // Toggle Mines Only Hotkey
+            // Toggle Underground Only Hotkey
             configMenu.AddKeybindList(
                 mod: this.ModManifest,
-                name: () => "Toggle Mines",
-                tooltip: () => "Set the keybind to toggle NightLight on/off for mines only.",
-                getValue: () => this.Config.NightLightToggleMinesKey,
-                setValue: value => this.Config.NightLightToggleMinesKey = value
+                name: () => "Toggle Underground",
+                tooltip: () => "Set the keybind to toggle NightLight on/off for underground areas only.",
+                getValue: () => this.Config.NightLightToggleUndergroundKey,
+                setValue: value => this.Config.NightLightToggleUndergroundKey = value
             );
         }
     }
