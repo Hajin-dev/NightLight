@@ -79,8 +79,19 @@ namespace NightLight
 
                     this.Helper.WriteConfig(this.Config);
                 }
+                // Indoor only
+                if (this.Config.NightLightToggleIndoorKey.JustPressed())
+                {
+                    if (this.Config.NightLightIndoors == true) {
+                        this.Config.NightLightIndoors = false;
+                    } else {
+                        this.Config.NightLightIndoors = true;
+                    }
 
-                // Outdoors & Underground
+                    this.Helper.WriteConfig(this.Config);
+                }
+
+                // Outdoors & Underground & House
                 if (this.Config.NightLightToggleAllKey.JustPressed()) {
                     // Outdoors
                     if (this.Config.NightLightOutdoors == true) {
@@ -96,6 +107,13 @@ namespace NightLight
                         this.Config.NightLightUnderground = true;
                     }
 
+                    // Indoor
+                    if (this.Config.NightLightIndoors == true) {
+                        this.Config.NightLightIndoors = false;
+                    } else {
+                        this.Config.NightLightIndoors = true;
+                    }
+
                     this.Helper.WriteConfig(this.Config);
 
                 }
@@ -104,12 +122,15 @@ namespace NightLight
 
         private void handleLighting() {
 
-            // Toggle outdoors lighting
-            if (Config.NightLightOutdoors) {
+            // Toggle outdoors& Indoor lighting
+            if ((Config.NightLightOutdoors && Config.NightLightIndoors) 
+                || (Config.NightLightIndoors && !Game1.currentLocation.IsOutdoors)
+                || (Config.NightLightOutdoors && Game1.currentLocation.IsOutdoors))
+                 {
+
 
                 // Get a reference to the game's ambientLight
                 IReflectedField<Color> ambientLight = this.Helper.Reflection.GetField<Color>(typeof(Game1), "ambientLight");
-                
                 ambientLight.SetValue(Color.Transparent);
 
             }
@@ -171,6 +192,14 @@ namespace NightLight
                 getValue: () => this.Config.NightLightUnderground,
                 setValue: value => this.Config.NightLightUnderground = value
             );
+            // Indoor NightLight
+            configMenu.AddBoolOption(
+              mod: this.ModManifest,
+              name: () => "Indoors",
+              tooltip: () => "Enables light while indoor at all times.",
+              getValue: () => this.Config.NightLightIndoors,
+              setValue: value => this.Config.NightLightIndoors = value
+          );
 
             // Section Title For Hotkeys
             configMenu.AddSectionTitle(
@@ -204,6 +233,14 @@ namespace NightLight
                 tooltip: () => "Set the keybind to toggle NightLight on/off for underground areas only.",
                 getValue: () => this.Config.NightLightToggleUndergroundKey,
                 setValue: value => this.Config.NightLightToggleUndergroundKey = value
+            );
+            // Toggle Indoor Only Hotkey
+            configMenu.AddKeybindList(
+                mod: this.ModManifest,
+                name: () => "Toggle Indoors",
+                tooltip: () => "Set the keybind to toggle NightLight on/off for indoors only.",
+                getValue: () => this.Config.NightLightToggleIndoorKey,
+                setValue: value => this.Config.NightLightToggleIndoorKey = value
             );
         }
     }
